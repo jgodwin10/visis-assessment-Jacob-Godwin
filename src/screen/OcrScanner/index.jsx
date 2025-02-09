@@ -1,8 +1,9 @@
 import React, { useState, useRef } from "react";
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import { View, Text, TouchableOpacity, Image, ActivityIndicator, Alert } from "react-native";
 import { CameraView, Camera } from "expo-camera";
 import TextRecognition from "@react-native-ml-kit/text-recognition";
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const GOOGLE_BOOKS_API_URL = "https://www.googleapis.com/books/v1/volumes?q=";
 
@@ -10,7 +11,7 @@ const OCRScannerScreen = ({ navigation }) => {
 	const [hasPermission, setHasPermission] = useState(null);
 	const [imageUri, setImageUri] = useState(null);
 	const [text, setText] = useState("");
-	const [books, setBooks] = useState([]);
+	const [loading, setLoading] = useState(false);
 	const cameraRef = useRef(null);
 
 	React.useEffect(() => {
@@ -21,9 +22,20 @@ const OCRScannerScreen = ({ navigation }) => {
 	}, []);
 
 	React.useEffect(() => {
-		console.log(text);
-		fetchBooks(text || "web");
+		if (text.trim()) {
+			fetchBooks(text || "web");
+		}
 	}, [text]);
+
+	const saveText = async (inputText) => {
+		try {
+			await AsyncStorage.setItem("savedText", inputText);
+			// Alert.alert("Success", "Text saved successfully!");
+			console.log("saved");
+		} catch (error) {
+			console.error("Error saving text:", error);
+		}
+	};
 
 	const captureAndRecognizeText = async () => {
 		if (!imageUri) {
@@ -33,8 +45,7 @@ const OCRScannerScreen = ({ navigation }) => {
 
 				try {
 					const result = await TextRecognition.recognize(photo.uri);
-
-					console.log(result.text);
+					console.log(result?.text);
 					setText(result?.text);
 				} catch (error) {
 					console.error("Text Recognition Error:", error);
@@ -42,15 +53,18 @@ const OCRScannerScreen = ({ navigation }) => {
 			}
 		} else {
 			setImageUri(null);
+			setText("");
 		}
 	};
 
 	const fetchBooks = async (query) => {
 		try {
-			console.log("hello");
+			setLoading(true);
 			const response = await axios.get(`${GOOGLE_BOOKS_API_URL}${encodeURIComponent(query)}`);
 			console.log(response.data.items[0].volumeInfo.imageLinks);
-			setBooks(response.data.items || []);
+			// setBooks(response.data.items || []);
+
+			await saveText(query);
 
 			const booksData =
 				response.data.items?.map((item) => ({
@@ -58,16 +72,16 @@ const OCRScannerScreen = ({ navigation }) => {
 					title: item.volumeInfo.title || "Unknown Title",
 					authors: item.volumeInfo.authors?.join(", ") || "Unknown Author",
 					description: item.volumeInfo.description || "No description available.",
-					thumbnail: item.volumeInfo.imageLinks?.thumbnail || item.volumeInfo.imageLinks?.smallThumbnail || null,
+					thumbnail: item.volumeInfo.imageLinks?.thumbnail.replace("http", "https") || item.volumeInfo.imageLinks?.smallThumbnail.replace("http", "https") || null,
 					rating: item.volumeInfo.averageRating || Math.random() * 2 + 7, // Fake rating if missing
 				})) || [];
 
 			// Navigate to BooksScreen and pass data
 			navigation.navigate("BooksScreen", { books: booksData });
-
-			// setText("");
 		} catch (error) {
-			console.error("Error fetching books:", error.response?.data || error.message);
+			Alert.alert("Error fetching books", "There was an error finding the Book you scanned, re-scan again");
+		} finally {
+			setLoading(false);
 		}
 	};
 
@@ -89,7 +103,7 @@ const OCRScannerScreen = ({ navigation }) => {
 					style={{ backgroundColor: "gold", height: 40, justifyContent: "center", alignItems: "center", paddingHorizontal: 15, borderRadius: 20, elevation: 20 }}
 					onPress={captureAndRecognizeText}
 				>
-					<Text>{imageUri ? "Scan Again" : "Capture & Recognize"}</Text>
+					{loading ? <ActivityIndicator size={"small"} /> : <Text>{imageUri ? "Scan Again" : "Capture & Recognize"}</Text>}
 				</TouchableOpacity>
 			</View>
 		</View>

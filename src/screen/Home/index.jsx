@@ -22,7 +22,7 @@ const HomeScreen = ({ navigation }) => {
 	const scrollX = useRef(new Animated.Value(0)).current;
 	const flatListRef = useRef(null);
 	const [query, setQuery] = useState("");
-	const [movies, setMovies] = useState([]);
+	const [books, setBooks] = useState([]);
 
 	useEffect(() => {
 		fetchBooks("web development");
@@ -35,17 +35,16 @@ const HomeScreen = ({ navigation }) => {
 	const fetchBooks = async (query) => {
 		try {
 			const response = await axios.get(`${GOOGLE_BOOKS_API_URL}${encodeURIComponent(query)}`);
-			console.log(response.data.items[0].volumeInfo.imageLinks);
 
 			const booksData =
 				response.data.items?.map((item) => ({
 					id: item.id,
 					title: item.volumeInfo.title || "Unknown Title",
-					image: item.volumeInfo.imageLinks?.thumbnail || item.volumeInfo.imageLinks?.smallThumbnail || null,
+					image: item.volumeInfo.imageLinks?.thumbnail.replace("http", "https") || item.volumeInfo.imageLinks?.smallThumbnail.replace("http", "https") || null,
 					rating: item.volumeInfo.averageRating || Math.random() * 2 + 7, // Fake rating if missing
 				})) || [];
 
-			setMovies(booksData);
+			setBooks(booksData);
 		} catch (error) {
 			console.error("Error fetching books:", error.response?.data || error.message);
 		}
@@ -100,7 +99,7 @@ const HomeScreen = ({ navigation }) => {
 
 			<Animated.FlatList
 				ref={flatListRef}
-				data={movies}
+				data={books}
 				horizontal
 				keyExtractor={(item) => item.id}
 				showsHorizontalScrollIndicator={false}

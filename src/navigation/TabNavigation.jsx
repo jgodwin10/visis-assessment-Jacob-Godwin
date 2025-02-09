@@ -3,6 +3,7 @@ import { View, Text, Animated, TouchableOpacity, StyleSheet, Dimensions } from "
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { FontAwesome6, Ionicons } from "@expo/vector-icons";
 import HomeScreen from "../screen/Home";
+import LibraryScreen from "../screen/Library";
 
 const Tab = createBottomTabNavigator();
 
@@ -41,11 +42,11 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
 	);
 };
 
-const VideoScreen = () => (
-	<View style={styles.screen}>
-		<Text style={styles.screenText}>Video Screen</Text>
-	</View>
-);
+// const LibraryScreen = () => (
+// 	<View style={styles.screen}>
+// 		<Text style={styles.screenText}>Library Screen</Text>
+// 	</View>
+// );
 
 const ProfileScreen = () => (
 	<View style={styles.screen}>
@@ -71,8 +72,8 @@ export default function App() {
 				}}
 			/>
 			<Tab.Screen
-				name="Video"
-				component={VideoScreen}
+				name="Library"
+				component={LibraryScreen}
 				options={{
 					tabBarIcon: ({ focused }) => <Ionicons name="book" size={24} color={focused ? "gold" : "gray"} />,
 				}}
