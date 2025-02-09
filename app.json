@@ -19,13 +19,19 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.peasyboy.visisassessmentJacobGodwin"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-font"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "3e435613-2c48-48cb-8c4a-b149ced7ba1f"
+      }
+    }
   }
 }

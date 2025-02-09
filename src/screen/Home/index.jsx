@@ -1,8 +1,9 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { View, Text, Image, FlatList, Animated, StyleSheet, Dimensions, TextInput, StatusBar } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { SafeAreaView } from "react-native-safe-area-context";
+import axios from "axios";
 
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
@@ -15,31 +16,40 @@ const INACTIVE_OPACITY = 0.5;
 
 const PADDING = StatusBar.currentHeight;
 
-const movies = [
-	{
-		id: "1",
-		title: "KAĞITTAN HAYATLAR",
-		image: "https://via.placeholder.com/300x400",
-		rating: "IMDb 7.5",
-	},
-	{
-		id: "2",
-		title: "Movie 2",
-		image: "https://via.placeholder.com/300x400",
-		rating: "IMDb 8.0",
-	},
-	{
-		id: "3",
-		title: "Movie 3",
-		image: "https://via.placeholder.com/300x400",
-		rating: "IMDb 6.9",
-	},
-];
+const GOOGLE_BOOKS_API_URL = "https://www.googleapis.com/books/v1/volumes?q=";
 
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }) => {
 	const scrollX = useRef(new Animated.Value(0)).current;
 	const flatListRef = useRef(null);
 	const [query, setQuery] = useState("");
+	const [movies, setMovies] = useState([]);
+
+	useEffect(() => {
+		fetchBooks("web development");
+	}, []);
+
+	useEffect(() => {
+		fetchBooks(query || "web development");
+	}, [query]);
+
+	const fetchBooks = async (query) => {
+		try {
+			const response = await axios.get(`${GOOGLE_BOOKS_API_URL}${encodeURIComponent(query)}`);
+			console.log(response.data.items[0].volumeInfo.imageLinks);
+
+			const booksData =
+				response.data.items?.map((item) => ({
+					id: item.id,
+					title: item.volumeInfo.title || "Unknown Title",
+					image: item.volumeInfo.imageLinks?.thumbnail || item.volumeInfo.imageLinks?.smallThumbnail || null,
+					rating: item.volumeInfo.averageRating || Math.random() * 2 + 7, // Fake rating if missing
+				})) || [];
+
+			setMovies(booksData);
+		} catch (error) {
+			console.error("Error fetching books:", error.response?.data || error.message);
+		}
+	};
 
 	const renderItem = ({ item, index }) => {
 		const inputRange = [(index - 1) * ITEM_WIDTH, index * ITEM_WIDTH, (index + 1) * ITEM_WIDTH];
@@ -62,7 +72,7 @@ const HomeScreen = () => {
 					<Image source={{ uri: item.image }} style={styles.image} />
 					<Text style={styles.title}>{item.title}</Text>
 					<View style={styles.ratingContainer}>
-						<Text style={styles.rating}>{item.rating}</Text>
+						<Text style={styles.rating}>{item.rating ? item.rating.toFixed(1) : "N/A"}</Text>
 					</View>
 				</Animated.View>
 			</View>
@@ -77,7 +87,7 @@ const HomeScreen = () => {
 					<Text style={styles.headSub}>Find Your Favourite Books Here!</Text>
 				</View>
 
-				<MaterialCommunityIcons name="qrcode-scan" size={24} color="white" />
+				<MaterialCommunityIcons onPress={() => navigation.navigate("OcrScanner")} name="qrcode-scan" size={24} color="white" />
 			</View>
 			<View style={styles.searchContainer}>
 				<Ionicons name="search" size={20} color="gray" style={styles.icon} />
@@ -143,6 +153,7 @@ const styles = StyleSheet.create({
 		width: "100%",
 		height: "80%",
 		borderRadius: 10,
+		// paddingTop: 20,
 	},
 	title: {
 		color: "white",
@@ -158,7 +169,8 @@ const styles = StyleSheet.create({
 		backgroundColor: "gold",
 		paddingVertical: 3,
 		paddingHorizontal: 8,
-		borderRadius: 10,
+		borderRadius: 5,
+		// marginBottom: 20,
 	},
 	rating: {
 		fontSize: 12,
@@ -178,7 +190,7 @@ const styles = StyleSheet.create({
 		backgroundColor: "#1E1E1E", // Search Bar Background Color
 		borderRadius: 15,
 		paddingHorizontal: 20,
-		paddingVertical: 8,
+		paddingVertical: 14,
 		marginHorizontal: 20,
 		marginBottom: 10,
 		marginTop: 10,

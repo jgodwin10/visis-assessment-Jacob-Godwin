@@ -1,10 +1,8 @@
 import React, { useState } from "react";
 import { View, Text, Animated, TouchableOpacity, StyleSheet, Dimensions } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Ionicons } from "@expo/vector-icons";
+import { FontAwesome6, Ionicons } from "@expo/vector-icons";
 import HomeScreen from "../screen/Home";
-import { CardStyleInterpolators } from "@react-navigation/stack";
 
 const Tab = createBottomTabNavigator();
 
@@ -76,14 +74,14 @@ export default function App() {
 				name="Video"
 				component={VideoScreen}
 				options={{
-					tabBarIcon: ({ focused }) => <Ionicons name="videocam" size={24} color={focused ? "gold" : "gray"} />,
+					tabBarIcon: ({ focused }) => <Ionicons name="book" size={24} color={focused ? "gold" : "gray"} />,
 				}}
 			/>
 			<Tab.Screen
 				name="Profile"
 				component={ProfileScreen}
 				options={{
-					tabBarIcon: ({ focused }) => <Ionicons name="person" size={24} color={focused ? "gold" : "gray"} />,
+					tabBarIcon: ({ focused }) => <FontAwesome6 name="user" size={24} color={focused ? "gold" : "gray"} />,
 				}}
 			/>
 		</Tab.Navigator>

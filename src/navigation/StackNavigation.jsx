@@ -4,6 +4,9 @@ import { CardStyleInterpolators, createStackNavigator } from "@react-navigation/
 import HomeScreen from "../screen/Home";
 import { useColorScheme } from "react-native";
 import TabNavigation from "./TabNavigation";
+import OCRScannerScreen from "../screen/OcrScanner";
+import { StatusBar } from "expo-status-bar";
+import BooksScreen from "../screen/Books";
 
 const Stack = createStackNavigator();
 
@@ -11,17 +14,21 @@ const StackNavigation = () => {
 	const colorScheme = useColorScheme();
 
 	return (
-		<Stack.Navigator
-			// initialRouteName="Tabs"
-			screenOptions={{
-				headerShown: false,
-				cardStyleInterpolator: CardStyleInterpolators.forRevealFromBottomAndroid,
-			}}
-		>
-			<Stack.Screen name="Tabs" component={TabNavigation} />
-			{/* <Stack.Screen name="Auth" component={AuthNavigator} />
-				<Stack.Screen name="Tabs" component={TabNavigator} /> */}
-		</Stack.Navigator>
+		<>
+			<StatusBar />
+			<Stack.Navigator
+				// initialRouteName="Tabs"
+				screenOptions={{
+					headerShown: false,
+					cardStyleInterpolator: CardStyleInterpolators.forRevealFromBottomAndroid,
+				}}
+			>
+				<Stack.Screen name="Tabs" component={TabNavigation} />
+				<Stack.Screen name="OcrScanner" component={OCRScannerScreen} />
+				<Stack.Screen name="BooksScreen" component={BooksScreen} />
+				{/* <Stack.Screen name="Tabs" component={TabNavigator} /> */}
+			</Stack.Navigator>
+		</>
 	);
 };
 
