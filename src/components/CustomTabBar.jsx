@@ -1,37 +1,17 @@
 import React, { useState } from "react";
 import { View, Text, Animated, TouchableOpacity, StyleSheet } from "react-native";
+import useKeyboard from "../hooks/useKeyboard";
 
 export const CustomTabBar = ({ state, descriptors, navigation }) => {
-	const [indicatorPosition] = useState(new Animated.Value(0));
-
-	const indicatorTranslate = indicatorPosition.interpolate({
-		inputRange: [0, 1],
-		outputRange: [0, 120], // Adjust based on tab width
-	});
-
-	// Animate indicator position on tab change
-	React.useEffect(() => {
-		Animated.timing(indicatorPosition, {
-			toValue: state.index,
-			duration: 300,
-			useNativeDriver: false,
-		}).start();
-	}, [state.index]);
+	const keyboard = useKeyboard();
 
 	return (
-		<View style={styles.tabBarContainer}>
-			<Animated.View
-				style={[
-					styles.indicator,
-					{
-						transform: [{ translateX: indicatorTranslate }],
-					},
-				]}
-			/>
+		<View style={[styles.tabBarContainer, { display: keyboard ? "none" : "" }]}>
 			{state.routes.map((route, index) => {
 				const { options } = descriptors[route.key];
 				const label = options.tabBarLabel !== undefined ? options.tabBarLabel : options.title !== undefined ? options.title : route.name;
 
+				const Icon = options.tabBarIcon;
 				const isFocused = state.index === index;
 
 				const onPress = () => {
@@ -48,7 +28,10 @@ export const CustomTabBar = ({ state, descriptors, navigation }) => {
 
 				return (
 					<TouchableOpacity key={route.key} onPress={onPress} style={styles.tab}>
-						<Text style={[styles.tabText, isFocused && styles.activeTabText]}>{label}</Text>
+						<View style={styles.iconContainer}>
+							<Icon focused={isFocused} />
+						</View>
+						{/* {isFocused && <Text style={styles.label}>{label}</Text>} */}
 					</TouchableOpacity>
 				);
 			})}
@@ -59,42 +42,46 @@ export const CustomTabBar = ({ state, descriptors, navigation }) => {
 const styles = StyleSheet.create({
 	tabBarContainer: {
 		flexDirection: "row",
-		backgroundColor: "#2a2a2a",
-		borderRadius: 20,
-		marginHorizontal: 20,
-		marginBottom: 20,
-		position: "relative",
-		height: 50,
+		height: 60,
+		// backgroundColor: "#000",
+		borderTopLeftRadius: 20,
+		borderTopRightRadius: 20,
+		position: "absolute",
+		paddingHorizontal: 10,
+		justifyContent: "space-around",
+		alignItems: "center",
+		bottom: 10,
+		width: "100%",
+		// display:
 	},
 	tab: {
+		alignItems: "center",
+		justifyContent: "center",
 		flex: 1,
+		position: "relative",
+	},
+	iconContainer: {
 		justifyContent: "center",
 		alignItems: "center",
 	},
-	tabText: {
-		color: "#aaa",
-		fontSize: 16,
-		fontWeight: "500",
-	},
-	activeTabText: {
-		color: "#fff",
+	label: {
+		position: "absolute",
+		top: 40,
+		backgroundColor: "transparent",
+		color: "white",
+		fontSize: 14,
+		fontWeight: "bold",
 	},
 	indicator: {
 		position: "absolute",
-		width: 120, // Tab width
-		height: "100%",
-		backgroundColor: "#444",
+		width: 80, // Width of the indicator for each tab
+		height: 40,
 		borderRadius: 20,
-		zIndex: -1,
-	},
-	screen: {
-		flex: 1,
-		justifyContent: "center",
-		alignItems: "center",
 		backgroundColor: "#1a1a1a",
-	},
-	screenText: {
-		color: "#fff",
-		fontSize: 20,
+		borderColor: "gold",
+		borderWidth: 2,
+		zIndex: -1,
+		alignSelf: "center",
+		top: 10,
 	},
 });

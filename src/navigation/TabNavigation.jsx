@@ -4,49 +4,9 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { FontAwesome6, Ionicons } from "@expo/vector-icons";
 import HomeScreen from "../screen/Home";
 import LibraryScreen from "../screen/Library";
+import { CustomTabBar } from "../components/CustomTabBar";
 
 const Tab = createBottomTabNavigator();
-
-const CustomTabBar = ({ state, descriptors, navigation }) => {
-	return (
-		<View style={styles.tabBarContainer}>
-			{state.routes.map((route, index) => {
-				const { options } = descriptors[route.key];
-				const label = options.tabBarLabel !== undefined ? options.tabBarLabel : options.title !== undefined ? options.title : route.name;
-
-				const Icon = options.tabBarIcon;
-				const isFocused = state.index === index;
-
-				const onPress = () => {
-					const event = navigation.emit({
-						type: "tabPress",
-						target: route.key,
-						canPreventDefault: true,
-					});
-
-					if (!isFocused && !event.defaultPrevented) {
-						navigation.navigate(route.name);
-					}
-				};
-
-				return (
-					<TouchableOpacity key={route.key} onPress={onPress} style={styles.tab}>
-						<View style={styles.iconContainer}>
-							<Icon focused={isFocused} />
-						</View>
-						{/* {isFocused && <Text style={styles.label}>{label}</Text>} */}
-					</TouchableOpacity>
-				);
-			})}
-		</View>
-	);
-};
-
-// const LibraryScreen = () => (
-// 	<View style={styles.screen}>
-// 		<Text style={styles.screenText}>Library Screen</Text>
-// 	</View>
-// );
 
 const ProfileScreen = () => (
 	<View style={styles.screen}>
@@ -61,6 +21,7 @@ export default function App() {
 				headerShown: false,
 				tabBarStyle: { display: "none" },
 				tabBarShowLabel: false,
+				// tabBarStyle: [styles.tabBarStyle, { display: keyboard ? "none" : "", backgroundColor: colors.primary }],
 			}}
 			tabBar={(props) => <CustomTabBar {...props} />}
 		>
@@ -90,49 +51,6 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-	tabBarContainer: {
-		flexDirection: "row",
-		height: 60,
-		// backgroundColor: "#000",
-		borderTopLeftRadius: 20,
-		borderTopRightRadius: 20,
-		position: "absolute",
-		paddingHorizontal: 10,
-		justifyContent: "space-around",
-		alignItems: "center",
-		bottom: 10,
-		width: "100%",
-	},
-	tab: {
-		alignItems: "center",
-		justifyContent: "center",
-		flex: 1,
-		position: "relative",
-	},
-	iconContainer: {
-		justifyContent: "center",
-		alignItems: "center",
-	},
-	label: {
-		position: "absolute",
-		top: 40,
-		backgroundColor: "transparent",
-		color: "white",
-		fontSize: 14,
-		fontWeight: "bold",
-	},
-	indicator: {
-		position: "absolute",
-		width: 80, // Width of the indicator for each tab
-		height: 40,
-		borderRadius: 20,
-		backgroundColor: "#1a1a1a",
-		borderColor: "gold",
-		borderWidth: 2,
-		zIndex: -1,
-		alignSelf: "center",
-		top: 10,
-	},
 	screen: {
 		flex: 1,
 		justifyContent: "center",
