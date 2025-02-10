@@ -23,6 +23,13 @@ Ensure you have the following installed:
 
 ---
 
+## 📥 Download  
+
+- **📱 APK File:** [Download Here](https://drive.google.com/file/d/1AZEA5mo9ehPeWjkouxrz_s1V0UTMNreP/view?usp=drivesdk)  
+- **📺 Video Demonstration:** [Watch Here](https://youtu.be/BnLbwGtyilg?si=oFPK_83hwflPLa0F)
+
+---
+
 ## 🚀 Installation  
 
 1. **Clone the repository**  
