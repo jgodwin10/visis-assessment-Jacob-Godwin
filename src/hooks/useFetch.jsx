@@ -42,9 +42,11 @@ const useFetch = () => {
 					rating: item.volumeInfo.averageRating || Math.random() * 2 + 7, // Fake rating if missing
 				})) || [];
 
+			console.log(booksData);
 			setSuccess(true);
 			setBooks(booksData);
 		} catch (error) {
+			setError(true);
 			console.error("Error fetching books:", error.response?.data || error.message);
 		} finally {
 			setLoading(false);
